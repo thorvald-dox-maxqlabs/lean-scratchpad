@@ -25,7 +25,9 @@ private lemma scoreCount_mod_five (n k : ℕ) :
   · simp only [scoreCount, Nat.cast_mul, Nat.cast_pow]
     by_cases hlt : k < n
     · have hpos : 0 < n - k := Nat.sub_pos_of_lt hlt
-      simp [hkn, hpos]
+      rw [if_neg hkn]
+      have hfive : ((5 : ℕ) : ZMod 5) = 0 := rfl
+      rw [hfive, zero_pow (Nat.ne_of_gt hpos), mul_zero]
     · have hnk : n < k := by omega
       simp [hkn, Nat.choose_eq_zero_of_lt hnk]
 
@@ -33,13 +35,15 @@ private lemma playerBWinningCount_mod_five (a b : ℕ) :
     (playerBWinningCount a b : ZMod 5) = if a ≤ b then 1 else 0 := by
   simp only [playerBWinningCount, Nat.cast_sum, Nat.cast_mul,
     scoreCount_mod_five]
+  simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_irrel,
+    Finset.sum_const_zero, Finset.mem_Icc, le_refl, and_true]
   by_cases hab : a ≤ b
   · simp [hab]
   · simp [hab]
 
 /-- With positive numbers of ordinary dice, and with only six counting as a
 success, no choice of dice counts makes the game fair. -/
-theorem no_fair_positive_configuration (a b : ℕ) (ha : 0 < a) (hb : 0 < b) :
+theorem no_fair_positive_configuration (a b : ℕ) (ha : 0 < a) (_hb : 0 < b) :
     playerBWinProbability a b ≠ (1 : ℚ) / 2 := by
   intro hfair
   have hpow : (6 : ℚ) ^ (a + b) ≠ 0 := by positivity
@@ -55,9 +59,20 @@ theorem no_fair_positive_configuration (a b : ℕ) (ha : 0 < a) (hb : 0 < b) :
   have hhalf : playerBWinningCount a b = 3 * 6 ^ (a + b - 1) := by
     rw [hexp] at hnat
     omega
-  have hmod := congrArg (fun n : ℕ => (n : ZMod 5)) hhalf
+  have hmod : (playerBWinningCount a b : ZMod 5) =
+      (3 : ZMod 5) * (6 : ZMod 5) ^ (a + b - 1) := by
+    calc
+      (playerBWinningCount a b : ZMod 5) =
+          ((3 * 6 ^ (a + b - 1) : ℕ) : ZMod 5) :=
+        congrArg (fun n : ℕ => (n : ZMod 5)) hhalf
+      _ = (3 : ZMod 5) * (6 : ZMod 5) ^ (a + b - 1) := by
+        rw [Nat.cast_mul, Nat.cast_pow]
+        have hthree : ((3 : ℕ) : ZMod 5) = 3 := rfl
+        have hsix : ((6 : ℕ) : ZMod 5) = 6 := rfl
+        rw [hthree, hsix]
   rw [playerBWinningCount_mod_five] at hmod
-  norm_num at hmod
+  have hsix : (6 : ZMod 5) = 1 := rfl
+  rw [hsix, one_pow, mul_one] at hmod
   split at hmod <;> contradiction
 
 end LeanScratchpad.SimpleDice
