@@ -11,16 +11,37 @@ for this project automatically.
 
 ## Get started
 
-Fetch mathlib and its precompiled cache, then build the project:
+Run the setup script in a fresh checkout:
 
 ```sh
-lake update
-lake exe cache get
-lake build
+./scripts/setup-lean.sh
 ```
+
+It installs `elan` when necessary, selects the Lean version pinned by
+`lean-toolchain`, fetches mathlib and its precompiled cache, and builds every
+project module. The script is non-interactive and idempotent, so it can also be
+used to prepare an automated agent or development container.
+
+For a Codex cloud environment, use `./scripts/setup-lean.sh` as the environment's
+setup script. Codex provides `CODEX_ENV_PERSIST` during setup; the script records
+elan's `PATH` entry there so `lean` and `lake` remain available after setup, when
+internet access is disabled. All compiler, dependency, and cache downloads are
+completed before the initial build finishes.
 
 Add experiments to `LeanScratchpad/Basic.lean`, or create more modules beneath
 `LeanScratchpad/` and import them from `LeanScratchpad.lean`.
 
 The example theorem in `LeanScratchpad/Basic.lean` imports mathlib and uses its
 `ring` tactic, so a successful build verifies that the dependency is available.
+
+## Check proofs live
+
+After setup, run Lean against an individual file for fast feedback:
+
+```sh
+lake env lean LeanScratchpad/Basic.lean
+```
+
+Use `lake build` to check all imported project modules. If `lake` is not found
+in a newly opened shell, add elan to that shell's path with
+`export PATH="$HOME/.elan/bin:$PATH"`.
