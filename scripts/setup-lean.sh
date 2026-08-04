@@ -30,4 +30,3 @@ fi
 # lean-toolchain pins Lean, while lake-manifest.json pins all dependencies.
 lake update
 lake exe cache get
-lake build
