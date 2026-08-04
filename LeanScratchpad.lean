@@ -1,2 +1,3 @@
 import LeanScratchpad.Basic
 import LeanScratchpad.ExplodingDice
+import LeanScratchpad.SimpleDice
