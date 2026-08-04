@@ -34,14 +34,36 @@ def Outcome.scoreB {a b : ℕ} (outcome : Outcome a b) : ℕ :=
 def playerBWins {a b : ℕ} (outcome : Outcome a b) : Prop :=
   outcome.scoreA ≤ outcome.scoreB
 
-/-- Giving B half a success implements precisely the stated tie-break rule.
+/-- The probability that one initial die-chain produces exactly `successes`
+successes.  Zero successes means rolling `1`--`4`.  For a positive number `k`,
+the chain is either `k - 1` sixes followed by a five, or `k` sixes followed by
+`1`--`4`.  Thus exploding sixes are encoded by the powers of six here. -/
+def singleChainProbability (successes : ℕ) : ℝ :=
+  if successes = 0 then 2 / 3 else 10 / 6 ^ (successes + 1)
 
-The positivity assumptions record that both players start with at least one
-die. The proof is intentionally deferred. -/
-theorem playerB_half_success_theorem
-    (a b : ℕ) (ha : 0 < a) (hb : 0 < b) (outcome : Outcome a b) :
-    playerBWins outcome ↔
-      (outcome.scoreA : ℚ) < (outcome.scoreB : ℚ) + 1 / 2 := by
+/-- The probability of a given total score from `dice` independent initial
+dice.  This is the convolution of the exploding-chain distribution. -/
+def scoreProbability : ℕ → ℕ → ℝ
+  | 0, score => if score = 0 then 1 else 0
+  | dice + 1, score =>
+      ∑ chainScore ∈ Finset.range (score + 1),
+        singleChainProbability chainScore *
+          scoreProbability dice (score - chainScore)
+
+/-- The probability that B wins.  The inner sum includes scores equal to A's,
+so it implements the rule that B wins ties. -/
+noncomputable def playerBWinProbability (a b : ℕ) : ℝ :=
+  ∑' scoreA : ℕ, scoreProbability a scoreA *
+    ∑' scoreB : ℕ,
+      if scoreA ≤ scoreB then scoreProbability b scoreB else 0
+
+/-- No positive choices of initial dice make the game fair: B's probability of
+winning is never exactly one half.
+
+The proof is intentionally deferred. -/
+theorem no_fair_positive_configuration :
+    ∀ a b : ℕ, 0 < a → 0 < b →
+      playerBWinProbability a b ≠ (1 : ℝ) / 2 := by
   sorry
 
 end LeanScratchpad.ExplodingDice

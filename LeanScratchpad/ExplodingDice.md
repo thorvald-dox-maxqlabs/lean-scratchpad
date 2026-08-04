@@ -9,16 +9,28 @@ dice and player B starts with `b` fair six-sided dice. For each initial die:
    which the same rules are applied recursively.
 
 The score of a player is the total number of successes in all of that player's
-chains. Almost surely every chain is finite; the Lean formulation represents
-such a completed play directly as a nonempty finite list whose final roll is
-not 6 and whose earlier rolls are all 6.
+chains. Almost surely every chain is finite. The Lean formulation describes a
+completed chain as a nonempty finite list whose final roll is not 6 and whose
+earlier rolls are all 6.
 
-Player B wins exactly when Player A's score is less than Player B's score plus
-one half. Since both actual scores are natural numbers, this is equivalent to
-Player A's score being less than or equal to Player B's score. Thus ties are
-awarded to Player B.
+The probability that one initial die produces zero successes is `2/3`. For
+`k > 0`, the probability of exactly `k` successes is
 
-The statement deliberately does not yet assert or prove a formula for either
-player's winning probability. It formalizes the game outcome and the
-tie-breaking theorem; fairness becomes relevant when a probability law is put
-on the valid finite outcomes.
+```text
+10 / 6^(k + 1).
+```
+
+Indeed, the chain is either `k - 1` sixes followed by a 5, or `k` sixes
+followed by one of 1, 2, 3, or 4. This formula is where the recursive explosion
+rule enters the probability model. The distribution for several initial dice
+is obtained by convolution, and the probability that B wins sums over all
+score pairs for which B's score is at least A's score. Equality is included
+because ties go to B.
+
+## Theorem
+
+For every pair of positive integers `a` and `b`, the probability that Player B
+wins is not `1/2`. In other words, there is no configuration of positive
+numbers of starting dice for which the game is fair.
+
+The Lean file states this theorem but deliberately does not prove it yet.
