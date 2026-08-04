@@ -45,3 +45,21 @@ lake env lean LeanScratchpad/Basic.lean
 Use `lake build` to check all imported project modules. If `lake` is not found
 in a newly opened shell, add elan to that shell's path with
 `export PATH="$HOME/.elan/bin:$PATH"`.
+
+## Build the LaTeX proofs
+
+On a Debian- or Ubuntu-based system, install the TeX Live packages used by the
+mathematical write-ups with the idempotent setup script:
+
+```sh
+./scripts/setup-tex.sh
+```
+
+Then compile a proof from the repository root. For example:
+
+```sh
+pdflatex -output-directory=/tmp LeanScratchpad/SimpleDice.tex
+```
+
+Writing the generated PDF and auxiliary files to `/tmp` keeps the source tree
+clean; the resulting proof is `/tmp/SimpleDice.pdf`.

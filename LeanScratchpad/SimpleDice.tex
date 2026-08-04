@@ -1,0 +1,93 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}
+
+\newcommand{\N}{\mathbb{N}}
+
+\title{Why the Ordinary-Dice Game Is Never Fair}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+Player A rolls $a$ ordinary fair six-sided dice, and Player B rolls $b$.
+A die scores one point exactly when it shows a six, and otherwise scores no
+points.  The player with the higher score wins, with ties awarded to B.
+
+\begin{theorem}
+If $a,b\in\N$ are positive, then the probability that B wins is not
+$\tfrac12$.
+\end{theorem}
+
+\begin{proof}
+For $0\leq k\leq n$, let
+\[
+  c(n,k)=\binom{n}{k}5^{n-k}
+\]
+be the number of outcomes in which exactly $k$ of $n$ dice show a six.  The
+binomial coefficient chooses the successful dice, while each of the remaining
+$n-k$ dice has five possible faces.
+
+Let $W(a,b)$ denote the number of elementary outcomes in which B wins.  If A
+scores $i$, then B must score some $j\geq i$, so
+\[
+  W(a,b)
+    =\sum_{i=0}^{a}\ \sum_{j=i}^{b} c(a,i)c(b,j).
+\]
+(An inner sum is empty when $i>b$.)  Since all $6^{a+b}$ joint die outcomes
+are equally likely,
+\[
+  \Pr(B\text{ wins})=\frac{W(a,b)}{6^{a+b}}.
+\]
+
+We now compute the winning count modulo $5$.  From the definition of $c$,
+\[
+  c(n,k)\equiv
+  \begin{cases}
+    1 & \text{if }k=n,\\
+    0 & \text{if }k\neq n
+  \end{cases}
+  \pmod 5.
+\]
+Indeed, if $k<n$, the positive power $5^{n-k}$ supplies a factor of $5$; if
+$k=n$, then $c(n,n)=1$.  Values with $k>n$ contribute nothing because the
+corresponding binomial coefficient is zero.
+
+Thus every summand defining $W(a,b)$ vanishes modulo $5$ except possibly the
+one with $i=a$ and $j=b$.  That term occurs precisely when $a\leq b$, and
+hence
+\[
+  W(a,b)\equiv
+  \begin{cases}
+    1 & \text{if }a\leq b,\\
+    0 & \text{if }a>b
+  \end{cases}
+  \pmod 5.                                      \tag{1}
+\]
+
+Suppose, for a contradiction, that the game is fair.  Then
+\[
+  \frac{W(a,b)}{6^{a+b}}=\frac12,
+  \qquad\text{so}\qquad
+  W(a,b)=\frac{6^{a+b}}2.
+\]
+Because $a+b>0$, we can take one factor of $6$ out of the power and obtain
+\[
+  W(a,b)=3\cdot 6^{a+b-1}.
+\]
+Reducing this identity modulo $5$ gives
+\[
+  W(a,b)\equiv 3\cdot 1^{a+b-1}\equiv 3\pmod 5,
+\]
+since $6\equiv1\pmod5$.  This contradicts (1), which says that the same count
+is congruent to either $0$ or $1$ modulo $5$.  Therefore the probability that
+B wins cannot be $\tfrac12$.
+\end{proof}
+
+\end{document}
