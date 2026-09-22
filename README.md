@@ -46,6 +46,26 @@ Use `lake build` to check all imported project modules. If `lake` is not found
 in a newly opened shell, add elan to that shell's path with
 `export PATH="$HOME/.elan/bin:$PATH"`.
 
+## Windows setup
+
+Install Elan using the Windows installer linked in the Lean installation
+instructions above. Ensure `%USERPROFILE%\.elan\bin` is on your user `PATH`,
+then open a new PowerShell terminal in this project and run:
+
+```powershell
+lean --version
+lake update
+lake exe cache get
+lake build
+```
+
+The first run downloads the pinned toolchain and Mathlib dependencies. If an
+existing terminal does not yet see Elan, refresh its PATH for that session:
+
+```powershell
+$env:Path = "$env:USERPROFILE\.elan\bin;$env:Path"
+```
+
 ## Build the LaTeX proofs
 
 On a Debian- or Ubuntu-based system, install the TeX Live packages used by the

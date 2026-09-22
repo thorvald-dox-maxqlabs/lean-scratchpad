@@ -38,12 +38,12 @@ def playerBWins {a b : ℕ} (outcome : Outcome a b) : Prop :=
 successes.  Zero successes means rolling `1`--`4`.  For a positive number `k`,
 the chain is either `k - 1` sixes followed by a five, or `k` sixes followed by
 `1`--`4`.  Thus exploding sixes are encoded by the powers of six here. -/
-def singleChainProbability (successes : ℕ) : ℝ :=
+noncomputable def singleChainProbability (successes : ℕ) : ℝ :=
   if successes = 0 then 2 / 3 else 10 / 6 ^ (successes + 1)
 
 /-- The probability of a given total score from `dice` independent initial
 dice.  This is the convolution of the exploding-chain distribution. -/
-def scoreProbability : ℕ → ℕ → ℝ
+noncomputable def scoreProbability : ℕ → ℕ → ℝ
   | 0, score => if score = 0 then 1 else 0
   | dice + 1, score =>
       ∑ chainScore ∈ Finset.range (score + 1),
